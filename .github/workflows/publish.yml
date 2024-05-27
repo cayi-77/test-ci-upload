@@ -1,0 +1,49 @@
+name: Upload Release Package
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - '*' # patter like 'v*' for 'v1.0'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: windwos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Create file
+      run: |
+        echo "hey" > result.txt
+      shell: bash
+
+    - name: Publish package
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Changes in this Release
+          - First Change
+          - Second Change
+        draft: true
+        prerelease: false
+        
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: result.txt
+        asset_name: my-artifact.zip
+        # asset_content_type: application/zip
