@@ -8,7 +8,7 @@ on:
       - '*' # patter like 'v*' for 'v1.0'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
       run: |
         echo "hey" > result.txt
       shell: bash
-
+    # https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28
     - name: Publish package
       id: create_release
       uses: actions/create-release@v1
